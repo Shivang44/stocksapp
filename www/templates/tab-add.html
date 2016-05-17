@@ -10,12 +10,10 @@
 	</button>
 	</form>
 	<br/>
-	<h3>Your stocks</h3>
 	<ion-list>
-		<ion-item ng-repeat="stock in stocks">
+		<ion-item ng-repeat="stock in stocks" ng-click="removeStock($index)">
 			{{stock.symbol}}
 		</ion-item>
 	</ion-list>
-	<p style="text-align:center;">Tap on a stock to remove it</p>
   </ion-content>
 </ion-view>

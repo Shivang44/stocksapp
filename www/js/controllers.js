@@ -13,8 +13,20 @@ angular.module('starter.controllers', [])
 
   $scope.stocks = [];
   $scope.addStock = function(stock) {
-	  $scope.stocks.push({symbol: stock.symbol});
+	  if (stock.symbol.indexOf(",") > -1) {
+		  // Comma seperated
+		  var stockArray = stock.symbol.replace(/\s+/g, '').split(",");
+		  for (var i = 0; i < stockArray.length; i++) {
+			  $scope.stocks.push({symbol: stockArray[i]});
+		  }
+	  } else {
+		  $scope.stocks.push({symbol: stock.symbol});
+	  }
 	  stock.symbol = "";
+	  console.log($scope.stocks);
+  }
+  $scope.removeStock = function(index) {
+	  $scope.stocks.splice(index, 1);
   }
 
 });
