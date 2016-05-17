@@ -15,6 +15,13 @@ angular.module('starter.controllers', [])
   $scope.remove = function(chat) {
     Chats.remove(chat);
   };
+  $scope.stocks = [
+   { symbol: 'AAPL' },
+   { symbol: 'AAPL' },
+   { symbol: 'AAPL' },
+   { symbol: 'AAPL' },
+   { symbol: 'AAPL' }
+  ];
 })
 
 .controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {

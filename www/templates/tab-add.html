@@ -9,7 +9,7 @@
 	</button>
 	<br/>
 	<h3>Your stocks</h3>
-	<ul class="list">
+	<!--<ul class="list">
 		<li class="item">AAPL</li>
 		<li class="item">AAPL</li>
 		<li class="item">AAPL</li>
@@ -18,6 +18,12 @@
 		<li class="item">AAPL</li>
 		<li class="item">AAPL</li>
 		<li class="item">AAPL</li>
-	</ul>
+	</ul>-->
+	<ion-list>
+		<ion-item ng-repeat="stock in stocks">
+			{{stock.symbol}}
+		</ion-item>
+	</ion-list>
+	<p style="text-align:center;">Tap on a stock to remove it.</p>
   </ion-content>
 </ion-view>
