@@ -11,7 +11,7 @@
 	</form>
 	<br/>
 	<ion-list>
-		<ion-item ng-repeat="stock in stocks" ng-click="removeStock($index)">
+		<ion-item ng-repeat="stock in stocks" ng-click="clicked(stock)" ng-class="{ active: stock.selected }">
 			{{stock.symbol}}
 		</ion-item>
 	</ion-list>
