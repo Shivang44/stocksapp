@@ -40,4 +40,6 @@
     <splash src="resources/android/splash/drawable-port-xxhdpi-screen.png" density="port-xxhdpi"/>
     <splash src="resources/android/splash/drawable-port-xxxhdpi-screen.png" density="port-xxxhdpi"/>
   </platform>
+  <allow-navigation href="*://*.yahoo.com/*" />
+  <access origin="*://*.yahoo.com/*" />
 </widget>
