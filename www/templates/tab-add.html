@@ -1,29 +1,21 @@
 <ion-view view-title="QuickStocks">
   <ion-content class="padding">
+  <form ng-submit="addStock(stock)">
     <label class="item item-input">
 	  <span class="input-label">Enter stock symbol here: </span>
-	  <input type="text">
+	  <input type="text" ng-model="stock.symbol">
 	</label>
-	<button class="button button-block button-positive">
+	<button type="submit" class="button button-block button-positive">
 		Add
 	</button>
+	</form>
 	<br/>
 	<h3>Your stocks</h3>
-	<!--<ul class="list">
-		<li class="item">AAPL</li>
-		<li class="item">AAPL</li>
-		<li class="item">AAPL</li>
-		<li class="item">AAPL</li>
-		<li class="item">AAPL</li>
-		<li class="item">AAPL</li>
-		<li class="item">AAPL</li>
-		<li class="item">AAPL</li>
-	</ul>-->
 	<ion-list>
 		<ion-item ng-repeat="stock in stocks">
 			{{stock.symbol}}
 		</ion-item>
 	</ion-list>
-	<p style="text-align:center;">Tap on a stock to remove it.</p>
+	<p style="text-align:center;">Tap on a stock to remove it</p>
   </ion-content>
 </ion-view>
