@@ -38,24 +38,55 @@ angular.module('starter.controllers', [])
   //});
 
   $scope.stocks = [];
+  $scope.stockSymbols = [];
   
   $scope.addStock = function(stock) {
-	  if (stock.symbol.indexOf(",") > -1) {
-		  // Comma seperated
-		  var stockArray = stock.symbol.replace(/\s+/g, '').split(",");
-		  for (var i = 0; i < stockArray.length; i++) {
-			  $scope.stocks.push({symbol: stockArray[i]});
+	  if ($scope.addDelete == "Add") {
+		  if (stock.symbol == "") return;
+		  
+		  var alreadyAdded = false;
+		  if($scope.stockSymbols.indexOf(stock.symbol) > -1) {
+			  alreadyAdded = true;
 		  }
+		  
+		  if (stock.symbol.indexOf(",") > -1) {
+			  var stockArray = stock.symbol.replace(/\s+/g, '').split(",");
+			  for (var i = 0; i < stockArray.length; i++) {
+				  if ($scope.stockSymbols.indexOf(stockArray[i]) > -1) {
+					  alreadyAdded = true;
+				  } else {
+					  $scope.stocks.push({symbol: stockArray[i]});
+					  $scope.stockSymbols.push(stockArray[i]);
+				  }
+				  
+			  }
+		  } else {
+		  if ($scope.stockSymbols.indexOf(stock.symbol) < 0) {
+			  $scope.stocks.push({symbol: stock.symbol});
+			  $scope.stockSymbols.push(stock.symbol);
+		  }
+			  
+		  }
+		  stock.symbol = "";
+		  if (alreadyAdded) alert("Stock(s) already added!");
 	  } else {
-		  $scope.stocks.push({symbol: stock.symbol});
+		  for (var i = 0; i < $scope.selected.length; i++) {
+			  var index = $scope.stockSymbols.indexOf($scope.selected[i]);
+			  var stockName = $scope.stockSymbols[index];
+			  if (index > -1 ) {
+				  $scope.stockSymbols.splice(index, 1);
+				  $scope.selected.splice($scope.selected.indexOf(stockName), 1);
+				  console.log(index);
+				  //$scope.stocks.splice();
+			  }
+		  }
+		  console.log($scope.selected);
 	  }
-	  stock.symbol = "";
   }
   
   $scope.selected = [];
   $scope.clicked = function(stock) {
 	 var index = $scope.selected.indexOf(stock.symbol);
-	 console.log(index);
 	 if (index > -1){
 		 $scope.selected.splice(index, 1);
 		 stock.selected = false;
@@ -64,5 +95,14 @@ angular.module('starter.controllers', [])
 		 stock.selected = true;
 	 }
   }
+  
+  $scope.$watch('selected.length', function(oldVal, newVal){
+	  console.log($scope.selected);
+	  if ($scope.selected.length > 0) {
+		  $scope.addDelete = "Delete";
+	  } else {
+		  $scope.addDelete = "Add";
+	  }
+  }, true);
 
 });
