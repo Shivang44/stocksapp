@@ -2,10 +2,7 @@ angular.module('starter.controllers', [])
 
 .controller('ViewCtrl', function($scope) {
 	
-	
-	
-	// Initial
-	$scope.$on('$ionicView.enter', function(e) {
+	var mainFunction = function() {
 		// Timeframe to view stocks
 		var t = ['1d', '5d', '1m', '3m', '1y', '2y', '5y', 'my'];
 	
@@ -18,11 +15,30 @@ angular.module('starter.controllers', [])
 		// Start out with 1d
 		$scope.currentInterval = 0;
 		
-		var graphURL = 'https://chart.finance.yahoo.com/z?' + '&z=' + z + '&t=' + t[$scope.currentInterval] + '&s=';
-
+		// Get stock array
+		if(window.localStorage.getItem("stocks")) {
+			$scope.stocks = JSON.parse(window.localStorage.getItem("stocks"));
+			if ($scope.stocks.length > 0) {
+			
+			$scope.graphURL = 'https://chart.finance.yahoo.com/z?' + '&z=' + z + '&t='
+			+ t[$scope.currentInterval] + '&s=' + $scope.stocks[0].symbol;
+			
+			}
+			
+		} else {
+			$scope.stocks = [];
+		}
 		
 		
-    });
+		
+		
+		
+	}
+	
+	// Initial
+	$scope.$on('$ionicView.enter', function() {
+		mainFunction();
+	});
 	
 	
 })
@@ -37,7 +53,8 @@ angular.module('starter.controllers', [])
   //});
   
   
-  $scope.$parent.$on('$ionicView.enter', function(e) {
+  $scope.$on('$ionicView.enter', function(e) {
+	  console.log("here");
 	  $scope.stocks = [];
 	  $scope.stockSymbols = [];
 	  $scope.selected = [];
@@ -53,8 +70,6 @@ angular.module('starter.controllers', [])
 		  }
 		  
 	  }
-	  console.log($scope.stocks);
-	  console.log($scope.stockSymbols);
   });
 
  
