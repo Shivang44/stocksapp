@@ -9,7 +9,7 @@
 	</form>
 	<br/>
 	<ion-list>
-		<ion-item ng-repeat="stock in stocks" ng-click="clicked(stock)" ng-class="{ active: stock.selected }">
+		<ion-item ng-repeat="stock in stocks" ng-click="clicked(stock)" ng-class="{ active: (selected.indexOf(stock.symbol) > -1 ) }">
 			{{stock.symbol}}
 		</ion-item>
 	</ion-list>

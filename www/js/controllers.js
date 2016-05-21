@@ -19,7 +19,7 @@ angular.module('starter.controllers', [])
 		$scope.currentTime = 0;
 		
 		var graphURL = 'https://chart.finance.yahoo.com/z?' + '&z=' + z + '&t=' + t[$scope.currentTime] + '&s=';
-		console.log($scope.stocks);
+		//console.log($scope.stocks);
 		
 		
 		
@@ -39,6 +39,7 @@ angular.module('starter.controllers', [])
 
   $scope.stocks = [];
   $scope.stockSymbols = [];
+  $scope.clearedAll = false;
   
   $scope.addStock = function(stock) {
 	  if ($scope.addDelete == "Add") {
@@ -70,34 +71,43 @@ angular.module('starter.controllers', [])
 		  stock.symbol = "";
 		  if (alreadyAdded) alert("Stock(s) already added!");
 	  } else {
-		  for (var i = 0; i < $scope.selected.length; i++) {
-			  var index = $scope.stockSymbols.indexOf($scope.selected[i]);
-			  var stockName = $scope.stockSymbols[index];
-			  if (index > -1 ) {
-				  $scope.stockSymbols.splice(index, 1);
-				  $scope.selected.splice($scope.selected.indexOf(stockName), 1);
-				  console.log(index);
-				  //$scope.stocks.splice();
+		  // Delete
+		  var selectedLength = $scope.selected.length;
+		  for (var i = 0; i < selectedLength; i++) {
+			  var stockSymbolsIndex = $scope.stockSymbols.indexOf($scope.selected[i]);
+			  $scope.stockSymbols.splice(stockSymbolsIndex ,1);
+			  
+			  for (var j = 0; j < $scope.stocks.length; j++) {
+				if ($scope.stocks[j].symbol == $scope.selected[i]) {
+					$scope.stocks.splice(j, 1);
+				}
 			  }
+			  
+			 
+			  
 		  }
-		  console.log($scope.selected);
+		  console.log($scope.stocks);
+		  console.log($scope.stockSymbols);
+		  $scope.selected = [];
+		  
 	  }
   }
   
+  // Manage selecting/unselecting for deletion
   $scope.selected = [];
   $scope.clicked = function(stock) {
 	 var index = $scope.selected.indexOf(stock.symbol);
 	 if (index > -1){
 		 $scope.selected.splice(index, 1);
-		 stock.selected = false;
+		 //stock.selected = false;
 	 } else {
 		 $scope.selected.push(stock.symbol);
-		 stock.selected = true;
+		// stock.selected = true;
 	 }
   }
   
-  $scope.$watch('selected.length', function(oldVal, newVal){
-	  console.log($scope.selected);
+  // Change text of main button if we're adding or deleting
+  $scope.$watch('selected', function(newVal, oldVal){
 	  if ($scope.selected.length > 0) {
 		  $scope.addDelete = "Delete";
 	  } else {
