@@ -16,11 +16,10 @@ angular.module('starter.controllers', [])
 		$scope.currentStock = 0;
 		
 		// Start out with 1d
-		$scope.currentTime = 0;
+		$scope.currentInterval = 0;
 		
-		var graphURL = 'https://chart.finance.yahoo.com/z?' + '&z=' + z + '&t=' + t[$scope.currentTime] + '&s=';
-		//console.log($scope.stocks);
-		
+		var graphURL = 'https://chart.finance.yahoo.com/z?' + '&z=' + z + '&t=' + t[$scope.currentInterval] + '&s=';
+
 		
 		
     });
@@ -36,15 +35,41 @@ angular.module('starter.controllers', [])
   //
   //$scope.$on('$ionicView.enter', function(e) {
   //});
+  
+  
+  $scope.$parent.$on('$ionicView.enter', function(e) {
+	  $scope.stocks = [];
+	  $scope.stockSymbols = [];
+	  $scope.selected = [];
+	  if(window.localStorage.getItem("stocks")) {
+		  // Fill stock (array of objects)
+		  if (window.localStorage.getItem("stocks") !== "undefined") {
+			$scope.stocks = JSON.parse(window.localStorage.getItem("stocks"));
 
-  $scope.stocks = [];
-  $scope.stockSymbols = [];
-  $scope.clearedAll = false;
+			  // Fill array of stock symbols
+			  for (var i = 0; i < $scope.stocks.length; i++) {
+				$scope.stockSymbols[i] = $scope.stocks[i].symbol;
+			  }
+		  }
+		  
+	  }
+	  console.log($scope.stocks);
+	  console.log($scope.stockSymbols);
+  });
+
+ 
+  
+  $scope.$watchCollection('stocks', function(newValue, oldValue) {
+	  if (newValue != oldValue)
+		window.localStorage.setItem('stocks', JSON.stringify($scope.stocks));
+  });
   
   $scope.addStock = function(stock) {
+	  // user wants to either add or delete
+	  
 	  if ($scope.addDelete == "Add") {
-		  if (stock.symbol == "") return;
-		  
+		// User wants to add
+		if (stock.symbol == "" || stock.symbol == " ") return;
 		  var alreadyAdded = false;
 		  if($scope.stockSymbols.indexOf(stock.symbol) > -1) {
 			  alreadyAdded = true;
@@ -52,12 +77,15 @@ angular.module('starter.controllers', [])
 		  
 		  if (stock.symbol.indexOf(",") > -1) {
 			  var stockArray = stock.symbol.replace(/\s+/g, '').split(",");
+			  console.log(stockArray);
 			  for (var i = 0; i < stockArray.length; i++) {
 				  if ($scope.stockSymbols.indexOf(stockArray[i]) > -1) {
 					  alreadyAdded = true;
 				  } else {
-					  $scope.stocks.push({symbol: stockArray[i]});
-					  $scope.stockSymbols.push(stockArray[i]);
+						  if (stockArray[i] != "") {
+							$scope.stocks.push({symbol: stockArray[i]});
+							$scope.stockSymbols.push(stockArray[i]);
+						  }
 				  }
 				  
 			  }
@@ -71,23 +99,20 @@ angular.module('starter.controllers', [])
 		  stock.symbol = "";
 		  if (alreadyAdded) alert("Stock(s) already added!");
 	  } else {
-		  // Delete
+		  // User wants to delete
 		  var selectedLength = $scope.selected.length;
 		  for (var i = 0; i < selectedLength; i++) {
+			  // We need to delete stock from stocks[] array as well as stockSymbols[] array
 			  var stockSymbolsIndex = $scope.stockSymbols.indexOf($scope.selected[i]);
 			  $scope.stockSymbols.splice(stockSymbolsIndex ,1);
-			  
 			  for (var j = 0; j < $scope.stocks.length; j++) {
 				if ($scope.stocks[j].symbol == $scope.selected[i]) {
 					$scope.stocks.splice(j, 1);
 				}
 			  }
 			  
-			 
-			  
 		  }
-		  console.log($scope.stocks);
-		  console.log($scope.stockSymbols);
+		  // Clear any selected stocks
 		  $scope.selected = [];
 		  
 	  }
