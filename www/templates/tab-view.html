@@ -1,5 +1,5 @@
 <ion-view view-title="QuickStocks">
-  <ion-content class="padding">
+  <ion-content class="padding" on-swipe-left="onSwipe('left')" on-swipe-right="onSwipe('right')" on-swipe-up="onSwipe('up')" on-swipe-down="onSwipe('down')">
 	<div ng-class="{hide: stocks.length == 0}">
 		<img src="{{graphURL}}" style="width:100%;" />
 	</div>

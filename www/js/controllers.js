@@ -2,7 +2,15 @@ angular.module('starter.controllers', [])
 
 .controller('ViewCtrl', function($scope) {
 	
+	$scope.onSwipe = function(direction) {
+			window.plugins.nativepagetransitions.slide({"direction":direction});
+
+	}
+
+	
 	var mainFunction = function() {
+		
+	  
 		// Timeframe to view stocks
 		var t = ['1d', '5d', '1m', '3m', '1y', '2y', '5y', 'my'];
 	
@@ -43,7 +51,7 @@ angular.module('starter.controllers', [])
 	
 })
 
-.controller('AddCtrl', function($scope, Chats) {
+.controller('AddCtrl', function($scope, $state) {
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
   // To listen for when this page is active (for example, to refresh data),
@@ -80,7 +88,7 @@ angular.module('starter.controllers', [])
   });
   
   $scope.addStock = function(stock) {
-	  // user wants to either add or delete
+	// user wants to either add or delete
 	  
 	  if ($scope.addDelete == "Add") {
 		// User wants to add
