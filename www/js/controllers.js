@@ -2,6 +2,10 @@ angular.module('starter.controllers', [])
 
 .controller('ViewCtrl', function($scope) {
 	
+	// Data we want:
+	// LastTradePriceOnly => Current price
+	// PercentChange => Change in percent for today
+	
 	$scope.$watch('currentInterval', function(newValue, oldValue){
 		$scope.interval = $scope.t[newValue];
 	});
