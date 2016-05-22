@@ -2,21 +2,42 @@ angular.module('starter.controllers', [])
 
 .controller('ViewCtrl', function($scope) {
 	
+	$scope.$watch('currentInterval', function(newValue, oldValue){
+		$scope.interval = $scope.t[newValue];
+	});
+	
+	$scope.$watch('currentStock', function(newValue, oldValue){
+		$scope.stockName = $scope.stocks[newValue].symbol;
+	});
+	
 	$scope.onSwipe = function(direction) {
+			switch(direction) {
+				case "left": 
+					$scope.currentInterval++;
+					break;
+				case "right": 
+					$scope.currentInterval--;
+					break;
+				case "up": 
+					$scope.currentStock++;
+					break;
+				case "down": 
+					$scope.currentStock--;
+					break;
+				
+			}
+			$scope.newStock();
 			window.plugins.nativepagetransitions.slide({"direction":direction});
+			
 
 	}
 
 	
-	var mainFunction = function() {
+	$scope.mainFunction = function() {
 		
 	  
 		// Timeframe to view stocks
-		var t = ['1d', '5d', '1m', '3m', '1y', '2y', '5y', 'my'];
-	
-		// Stock graph size
-		var z = 's';
-		
+		$scope.t = ['1d', '5d', '1m', '3m', '1y', '2y', '5y', 'my'];
 		// Start with first stock in array
 		$scope.currentStock = 0;
 		
@@ -27,25 +48,39 @@ angular.module('starter.controllers', [])
 		if(window.localStorage.getItem("stocks")) {
 			$scope.stocks = JSON.parse(window.localStorage.getItem("stocks"));
 			if ($scope.stocks.length > 0) {
-			
-			$scope.graphURL = 'https://chart.finance.yahoo.com/z?' + '&z=' + z + '&t='
-			+ t[$scope.currentInterval] + '&s=' + $scope.stocks[0].symbol;
-			
+				$scope.graphURL = 'https://chart.finance.yahoo.com/z?' + '&z=s' + '&t='
+				+ $scope.t[$scope.currentInterval] + '&s=' + $scope.stocks[$scope.currentStock].symbol;
 			}
 			
 		} else {
 			$scope.stocks = [];
 		}
-		
-		
-		
-		
-		
+	}
+	
+	$scope.newStock = function () {
+		if ($scope.stocks.length > 0) {
+			
+			// If going past max time, just loop back around
+			if ($scope.currentInterval == $scope.t.length) $scope.currentInterval = 0;
+			
+			// If initally going left (index = -1) go to max
+			if ($scope.currentInterval == -1) $scope.currentInterval = $scope.t.length - 1;
+			
+			// If going past max stocks
+			if ($scope.currentStock == $scope.stocks.length) $scope.currentStock = 0;
+			
+			// If initially going up, show last stock
+			if ($scope.currentStock == -1) $scope.currentStock = $scope.stocks.length - 1;
+			
+			
+				$scope.graphURL = 'https://chart.finance.yahoo.com/z?' + '&z=s' + '&t='
+				+ $scope.t[$scope.currentInterval] + '&s=' + $scope.stocks[$scope.currentStock].symbol;
+		}
 	}
 	
 	// Initial
 	$scope.$on('$ionicView.enter', function() {
-		mainFunction();
+		$scope.mainFunction();
 	});
 	
 	
@@ -89,7 +124,7 @@ angular.module('starter.controllers', [])
   
   $scope.addStock = function(stock) {
 	// user wants to either add or delete
-	  
+	  stock.symbol = stock.symbol.toUpperCase();
 	  if ($scope.addDelete == "Add") {
 		// User wants to add
 		if (stock.symbol == "" || stock.symbol == " ") return;

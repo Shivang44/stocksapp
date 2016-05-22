@@ -2,6 +2,7 @@
   <ion-content class="padding" on-swipe-left="onSwipe('left')" on-swipe-right="onSwipe('right')" on-swipe-up="onSwipe('up')" on-swipe-down="onSwipe('down')">
 	<div ng-class="{hide: stocks.length == 0}">
 		<img src="{{graphURL}}" style="width:100%;" />
+		<h4>{{stockName}} - {{interval}}</h4>
 	</div>
 	<div ng-class="{hide: stocks.length > 0}">
 		<h4>You do not have any stock added.</h4>
