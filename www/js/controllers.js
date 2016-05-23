@@ -1,17 +1,35 @@
 angular.module('starter.controllers', [])
 
-.controller('ViewCtrl', function($scope) {
+.controller('ViewCtrl', function($scope, $http) {
 	
+
 	// Data we want:
 	// LastTradePriceOnly => Current price
 	// PercentChange => Change in percent for today
 	
 	$scope.$watch('currentInterval', function(newValue, oldValue){
-		$scope.interval = $scope.t[newValue];
+		if ($scope.stocks.length > 0)
+			$scope.interval = $scope.t[newValue];
 	});
 	
+	$scope.debugChange = function(n) {
+		
+		if (n == 0)
+			$scope.currentStock++;
+		else
+			$scope.currentInterval++;
+		$scope.newStock();
+		console.log($scope.stocks);
+	}
+	
 	$scope.$watch('currentStock', function(newValue, oldValue){
-		$scope.stockName = $scope.stocks[newValue].symbol;
+		if (!$scope.stocks) $scope.stocks = [];
+		
+		if ($scope.stocks.length > 0) {
+			$scope.stockName = $scope.stocks[newValue].symbol;
+			$scope.stocks[newValue].data = $scope.fetchCurrentData($scope.stocks[newValue].symbol);
+		}
+			
 	});
 	
 	$scope.onSwipe = function(direction) {
@@ -36,25 +54,49 @@ angular.module('starter.controllers', [])
 
 	}
 
+	$scope.fetchCurrentData = function(stockSymbol) {
+		 var url = 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20in%20(%22' + stockSymbol + '%22)&format=json&env=http%3A%2F%2Fdatatables.org%2Falltables.env';
+		return $http({
+		  method: 'GET',
+		  url: url
+		}).then(function successCallback(response) {
+			// this callback will be called asynchronously
+			// when the response is available
+			return response;
+		  }, function errorCallback(response) {
+			// called asynchronously if an error occurs
+			// or server returns response with an error status.
+			alert('Something went wrong. Please check your internet connection.');
+		  });
+	}
 	
 	$scope.mainFunction = function() {
 		
-	  
 		// Timeframe to view stocks
 		$scope.t = ['1d', '5d', '1m', '3m', '1y', '2y', '5y', 'my'];
+		$scope.t_EN = ['1 day', '5 day', '1 month', '3 month', '1 year', '2 year', '5 year', 'max'];
 		// Start with first stock in array
 		$scope.currentStock = 0;
 		
 		// Start out with 1d
 		$scope.currentInterval = 0;
 		
+		$scope.fillStockArray();
+
+	}
+	
+	$scope.fillStockArray = function() {
 		// Get stock array
 		if(window.localStorage.getItem("stocks")) {
 			$scope.stocks = JSON.parse(window.localStorage.getItem("stocks"));
 			if ($scope.stocks.length > 0) {
 				$scope.graphURL = 'https://chart.finance.yahoo.com/z?' + '&z=s' + '&t='
 				+ $scope.t[$scope.currentInterval] + '&s=' + $scope.stocks[$scope.currentStock].symbol;
+				
+				// Fetch data for current stock, put it into data variable of respective stock
+				$scope.stocks[$scope.currentStock].data = $scope.fetchCurrentData($scope.stocks[$scope.currentStock].symbol);
 			}
+			
 			
 		} else {
 			$scope.stocks = [];
@@ -101,7 +143,6 @@ angular.module('starter.controllers', [])
   
   
   $scope.$on('$ionicView.enter', function(e) {
-	  console.log("here");
 	  $scope.stocks = [];
 	  $scope.stockSymbols = [];
 	  $scope.selected = [];
