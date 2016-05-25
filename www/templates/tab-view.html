@@ -1,9 +1,10 @@
 <ion-view view-title="QuickStocks">
   <ion-content class="padding" on-swipe-left="onSwipe('left')" on-swipe-right="onSwipe('right')" on-swipe-up="onSwipe('up')" on-swipe-down="onSwipe('down')">
 	<div ng-class="{hide: stocks.length == 0}" style="text-align:center;">
+    <!-- E11111 red and 28a54c green -->
 		<img src="{{graphURL}}" style="width:100%;" />
-		<h3>{{stockName}} - <span>${{price | number: 2}}</span></h3>
-    <h3> {{interval}} change: </h3>
+		<h3>{{stockName}} <span style="font-weight:bold;">${{price | number: 2}}</span></h3>
+    <h3> {{interval}} change <span>{{perChange}}%</span></h3>
 	</div>
 	<div ng-class="{hide: stocks.length > 0}">
 		<h4>You do not have any stock added.</h4>

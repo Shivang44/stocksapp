@@ -5,6 +5,7 @@ angular.module('starter.controllers', [])
 	// Initialize
 	if (typeof $scope.stocks == "undefined") $scope.stocks = [];
 	if (typeof $scope.t_EN == "undefined") $scope.t_EN = [];
+	if (typeof $scope.currentStockData == "undefined") $scope.currentStockData = [];
 
 	// Data we want:
 	// LastTradePriceOnly => Current price
@@ -21,13 +22,14 @@ angular.module('starter.controllers', [])
 		else
 			$scope.currentInterval++;
 		$scope.newStock();
-		console.log($scope.stocks);
 	}
 
 	$scope.$watch('currentStock', function(newValue, oldValue){
 	//	if (!$scope.stocks) $scope.stocks = [];
 	if ($scope.stocks.length > 0) {
 		$scope.stockName = $scope.stocks[newValue].symbol;
+		// Fetch data for current stock, put it into data variable of respective stock
+		$scope.fetchCurrentData($scope.stocks[$scope.currentStock].symbol);
 	}
 
 
@@ -55,21 +57,32 @@ angular.module('starter.controllers', [])
 
 	}
 
+	$scope.$watch('currentStockData', function(newValue, oldValue){
+		if (newValue.length > 0) {
+			$scope.price = newValue[$scope.currentStock]["LastTradePriceOnly"];
+			$scope.perChange = newValue[$scope.currentStock]["Change"];
+		}
+	}, true);
+
 	$scope.fetchCurrentData = function(stockSymbol) {
-		 var url = 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20in%20(%22' + stockSymbol +
-		 '%22)&format=json&env=http%3A%2F%2Fdatatables.org%2Falltables.env';
-		$http({
-		  method: 'GET',
-		  url: url
-		}).then(function successCallback(response) {
-			// this callback will be called asynchronously
-			// when the response is available
-			$scope.price =  response.data.query.results.quote["LastTradePriceOnly"];
-		  }, function errorCallback(response) {
-			// called asynchronously if an error occurs
-			// or server returns response with an error status.
-			alert('Something went wrong. Please check your internet connection.');
-		  });
+		if (typeof $scope.currentStockData[$scope.currentStock] != "undefined") {
+			 var url = 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20in%20(%22' + stockSymbol +
+			 '%22)&format=json&env=http%3A%2F%2Fdatatables.org%2Falltables.env';
+			$http({
+			  method: 'GET',
+			  url: url
+			}).then(function successCallback(response) {
+				// this callback will be called asynchronously
+				// when the response is available
+				$scope.currentStockData[$scope.currentStock] = response.data.query.results.quote;
+				//$scope.price =  response.data.query.results.quote["LastTradePriceOnly"];
+				//$scope.perChange = response.data.query.results.quote["Change"];
+			  }, function errorCallback(response) {
+				// called asynchronously if an error occurs
+				// or server returns response with an error status.
+				alert('Something went wrong. Please check your internet connection.');
+			  });
+		}
 	}
 
 	$scope.mainFunction = function() {
@@ -96,8 +109,7 @@ angular.module('starter.controllers', [])
 				$scope.graphURL = 'https://chart.finance.yahoo.com/z?' + '&z=s' + '&t='
 				+ $scope.t[$scope.currentInterval] + '&s=' + $scope.stocks[$scope.currentStock].symbol;
 
-				// Fetch data for current stock, put it into data variable of respective stock
-				$scope.fetchCurrentData($scope.stocks[$scope.currentStock].symbol);
+
 			}
 
 
