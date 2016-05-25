@@ -1,19 +1,21 @@
 angular.module('starter.controllers', [])
 
 .controller('ViewCtrl', function($scope, $http) {
-	
+
+	// Initialize
+	if (typeof $scope.stocks == "undefined") $scope.stocks = [];
+	if (typeof $scope.t_EN == "undefined") $scope.t_EN = [];
 
 	// Data we want:
 	// LastTradePriceOnly => Current price
 	// PercentChange => Change in percent for today
-	
+
 	$scope.$watch('currentInterval', function(newValue, oldValue){
-		if ($scope.stocks.length > 0)
-			$scope.interval = $scope.t[newValue];
+			$scope.interval = $scope.t_EN[newValue];
 	});
-	
+
 	$scope.debugChange = function(n) {
-		
+
 		if (n == 0)
 			$scope.currentStock++;
 		else
@@ -21,115 +23,117 @@ angular.module('starter.controllers', [])
 		$scope.newStock();
 		console.log($scope.stocks);
 	}
-	
+
 	$scope.$watch('currentStock', function(newValue, oldValue){
-		if (!$scope.stocks) $scope.stocks = [];
-		
-		if ($scope.stocks.length > 0) {
-			$scope.stockName = $scope.stocks[newValue].symbol;
-			$scope.stocks[newValue].data = $scope.fetchCurrentData($scope.stocks[newValue].symbol);
-		}
-			
+	//	if (!$scope.stocks) $scope.stocks = [];
+	if ($scope.stocks.length > 0) {
+		$scope.stockName = $scope.stocks[newValue].symbol;
+	}
+
+
 	});
-	
+
 	$scope.onSwipe = function(direction) {
 			switch(direction) {
-				case "left": 
+				case "left":
 					$scope.currentInterval++;
 					break;
-				case "right": 
+				case "right":
 					$scope.currentInterval--;
 					break;
-				case "up": 
+				case "up":
 					$scope.currentStock++;
 					break;
-				case "down": 
+				case "down":
 					$scope.currentStock--;
 					break;
-				
+
 			}
 			$scope.newStock();
 			window.plugins.nativepagetransitions.slide({"direction":direction});
-			
+
 
 	}
 
 	$scope.fetchCurrentData = function(stockSymbol) {
-		 var url = 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20in%20(%22' + stockSymbol + '%22)&format=json&env=http%3A%2F%2Fdatatables.org%2Falltables.env';
-		return $http({
+		 var url = 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20in%20(%22' + stockSymbol +
+		 '%22)&format=json&env=http%3A%2F%2Fdatatables.org%2Falltables.env';
+		$http({
 		  method: 'GET',
 		  url: url
 		}).then(function successCallback(response) {
 			// this callback will be called asynchronously
 			// when the response is available
-			return response;
+			$scope.price =  response.data.query.results.quote["LastTradePriceOnly"];
 		  }, function errorCallback(response) {
 			// called asynchronously if an error occurs
 			// or server returns response with an error status.
 			alert('Something went wrong. Please check your internet connection.');
 		  });
 	}
-	
+
 	$scope.mainFunction = function() {
-		
 		// Timeframe to view stocks
 		$scope.t = ['1d', '5d', '1m', '3m', '1y', '2y', '5y', 'my'];
 		$scope.t_EN = ['1 day', '5 day', '1 month', '3 month', '1 year', '2 year', '5 year', 'max'];
+
 		// Start with first stock in array
 		$scope.currentStock = 0;
-		
+
 		// Start out with 1d
 		$scope.currentInterval = 0;
-		
+
 		$scope.fillStockArray();
 
 	}
-	
+
 	$scope.fillStockArray = function() {
 		// Get stock array
 		if(window.localStorage.getItem("stocks")) {
 			$scope.stocks = JSON.parse(window.localStorage.getItem("stocks"));
 			if ($scope.stocks.length > 0) {
+				// Generate graph URL
 				$scope.graphURL = 'https://chart.finance.yahoo.com/z?' + '&z=s' + '&t='
 				+ $scope.t[$scope.currentInterval] + '&s=' + $scope.stocks[$scope.currentStock].symbol;
-				
+
 				// Fetch data for current stock, put it into data variable of respective stock
-				$scope.stocks[$scope.currentStock].data = $scope.fetchCurrentData($scope.stocks[$scope.currentStock].symbol);
+				$scope.fetchCurrentData($scope.stocks[$scope.currentStock].symbol);
 			}
-			
-			
+
+
 		} else {
 			$scope.stocks = [];
 		}
 	}
-	
+
 	$scope.newStock = function () {
 		if ($scope.stocks.length > 0) {
-			
+
 			// If going past max time, just loop back around
 			if ($scope.currentInterval == $scope.t.length) $scope.currentInterval = 0;
-			
+
 			// If initally going left (index = -1) go to max
 			if ($scope.currentInterval == -1) $scope.currentInterval = $scope.t.length - 1;
-			
+
 			// If going past max stocks
 			if ($scope.currentStock == $scope.stocks.length) $scope.currentStock = 0;
-			
+
 			// If initially going up, show last stock
 			if ($scope.currentStock == -1) $scope.currentStock = $scope.stocks.length - 1;
-			
-			
+
+
 				$scope.graphURL = 'https://chart.finance.yahoo.com/z?' + '&z=s' + '&t='
 				+ $scope.t[$scope.currentInterval] + '&s=' + $scope.stocks[$scope.currentStock].symbol;
 		}
 	}
-	
+
+
 	// Initial
 	$scope.$on('$ionicView.enter', function() {
 		$scope.mainFunction();
 	});
-	
-	
+
+
 })
 
 .controller('AddCtrl', function($scope, $state) {
@@ -140,8 +144,8 @@ angular.module('starter.controllers', [])
   //
   //$scope.$on('$ionicView.enter', function(e) {
   //});
-  
-  
+
+
   $scope.$on('$ionicView.enter', function(e) {
 	  $scope.stocks = [];
 	  $scope.stockSymbols = [];
@@ -156,28 +160,28 @@ angular.module('starter.controllers', [])
 				$scope.stockSymbols[i] = $scope.stocks[i].symbol;
 			  }
 		  }
-		  
+
 	  }
   });
 
- 
-  
+
+
   $scope.$watchCollection('stocks', function(newValue, oldValue) {
 	  if (newValue != oldValue)
 		window.localStorage.setItem('stocks', JSON.stringify($scope.stocks));
   });
-  
+
   $scope.addStock = function(stock) {
 	// user wants to either add or delete
-	  stock.symbol = stock.symbol.toUpperCase();
 	  if ($scope.addDelete == "Add") {
 		// User wants to add
+		stock.symbol = stock.symbol.toUpperCase();
 		if (stock.symbol == "" || stock.symbol == " ") return;
 		  var alreadyAdded = false;
 		  if($scope.stockSymbols.indexOf(stock.symbol) > -1) {
 			  alreadyAdded = true;
 		  }
-		  
+
 		  if (stock.symbol.indexOf(",") > -1) {
 			  var stockArray = stock.symbol.replace(/\s+/g, '').split(",");
 			  console.log(stockArray);
@@ -190,14 +194,14 @@ angular.module('starter.controllers', [])
 							$scope.stockSymbols.push(stockArray[i]);
 						  }
 				  }
-				  
+
 			  }
 		  } else {
 		  if ($scope.stockSymbols.indexOf(stock.symbol) < 0) {
 			  $scope.stocks.push({symbol: stock.symbol});
 			  $scope.stockSymbols.push(stock.symbol);
 		  }
-			  
+
 		  }
 		  stock.symbol = "";
 		  if (alreadyAdded) alert("Stock(s) already added!");
@@ -213,14 +217,14 @@ angular.module('starter.controllers', [])
 					$scope.stocks.splice(j, 1);
 				}
 			  }
-			  
+
 		  }
 		  // Clear any selected stocks
 		  $scope.selected = [];
-		  
+
 	  }
   }
-  
+
   // Manage selecting/unselecting for deletion
   $scope.selected = [];
   $scope.clicked = function(stock) {
@@ -233,7 +237,7 @@ angular.module('starter.controllers', [])
 		// stock.selected = true;
 	 }
   }
-  
+
   // Change text of main button if we're adding or deleting
   $scope.$watch('selected', function(newVal, oldVal){
 	  if ($scope.selected.length > 0) {
