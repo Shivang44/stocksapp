@@ -22,7 +22,6 @@ angular.module('starter.controllers', [])
 		else
 			$scope.currentInterval++;
 		$scope.newStock();
-		console.log($scope.currentStock);
 	}
 
 	$scope.$watch('currentStock', function(newValue, oldValue){
@@ -37,7 +36,6 @@ angular.module('starter.controllers', [])
 						$scope.fetchCurrentData($scope.stockName);
 					} else {
 						// Data already filled, set values
-						console.log($scope.stocks);
 						$scope.price = $scope.stocks[i].data.LastTradePriceOnly;
 						$scope.perChange = $scope.stocks[i].data.Change;
 					}
@@ -47,6 +45,19 @@ angular.module('starter.controllers', [])
 
 		}
 
+
+	});
+
+	$scope.$watch('perChange', function(newValue, oldValue) {
+		if (typeof newValue !== "undefined") {
+			if (newValue[0] === "+") {
+				$scope.perChangeColor = "#28a54c";
+				// Color green
+			} else if(newValue[0] === "-") {
+				// Color red
+				$scope.perChangeColor = "#E11111";
+			}
+		}
 
 	});
 
@@ -102,7 +113,6 @@ angular.module('starter.controllers', [])
 						}
 					}
 				}
-				console.log($scope.stocks);
 
 
 				//$scope.price =  response.data.query.results.quote["LastTradePriceOnly"];
@@ -229,7 +239,6 @@ angular.module('starter.controllers', [])
 
 		  if (stock.symbol.indexOf(",") > -1) {
 			  var stockArray = stock.symbol.replace(/\s+/g, '').split(",");
-			  console.log(stockArray);
 			  for (var i = 0; i < stockArray.length; i++) {
 				  if ($scope.stockSymbols.indexOf(stockArray[i]) > -1) {
 					  alreadyAdded = true;
