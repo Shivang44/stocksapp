@@ -5,7 +5,7 @@ angular.module('starter.controllers', [])
 	// Initialize
 	if (typeof $scope.stocks == "undefined") $scope.stocks = [];
 	if (typeof $scope.t_EN == "undefined") $scope.t_EN = [];
-	if (typeof $scope.currentStockData == "undefined") $scope.currentStockData = [];
+	if (typeof $scope.newStockData == "undefined") $scope.newStockData = [];
 
 	// Data we want:
 	// LastTradePriceOnly => Current price
@@ -22,18 +22,34 @@ angular.module('starter.controllers', [])
 		else
 			$scope.currentInterval++;
 		$scope.newStock();
+		console.log($scope.currentStock);
 	}
 
 	$scope.$watch('currentStock', function(newValue, oldValue){
-	//	if (!$scope.stocks) $scope.stocks = [];
-	if ($scope.stocks.length > 0) {
-		$scope.stockName = $scope.stocks[newValue].symbol;
-		// Fetch data for current stock, put it into data variable of respective stock
-		$scope.fetchCurrentData($scope.stocks[$scope.currentStock].symbol);
-	}
+		if ($scope.stocks.length > 0) {
+			$scope.stockName = $scope.stocks[newValue].symbol;
+
+			for (var i = 0; i < $scope.stocks.length; i++) {
+				if ($scope.stocks[i].symbol == $scope.stockName) {
+					// See if data is filled
+					if (typeof $scope.stocks[i].data === "undefined") {
+						// Need to fill in data
+						$scope.fetchCurrentData($scope.stockName);
+					} else {
+						// Data already filled, set values
+						console.log($scope.stocks);
+						$scope.price = $scope.stocks[i].data.LastTradePriceOnly;
+						$scope.perChange = $scope.stocks[i].data.Change;
+					}
+					i = $scope.stocks.length;
+				}
+			}
+
+		}
 
 
 	});
+
 
 	$scope.onSwipe = function(direction) {
 			switch(direction) {
@@ -57,24 +73,38 @@ angular.module('starter.controllers', [])
 
 	}
 
-	$scope.$watch('currentStockData', function(newValue, oldValue){
+/*
+	$scope.$watch('newStockData', function(newValue, oldValue){
+		console.log(newValue);
 		if (newValue.length > 0) {
 			$scope.price = newValue[$scope.currentStock]["LastTradePriceOnly"];
 			$scope.perChange = newValue[$scope.currentStock]["Change"];
 		}
-	}, true);
+	}, true);*/
 
 	$scope.fetchCurrentData = function(stockSymbol) {
-		if (typeof $scope.currentStockData[$scope.currentStock] != "undefined") {
+
 			 var url = 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20in%20(%22' + stockSymbol +
 			 '%22)&format=json&env=http%3A%2F%2Fdatatables.org%2Falltables.env';
 			$http({
 			  method: 'GET',
 			  url: url
 			}).then(function successCallback(response) {
-				// this callback will be called asynchronously
-				// when the response is available
-				$scope.currentStockData[$scope.currentStock] = response.data.query.results.quote;
+				var stockSymbolIndex = 0;
+				for (var i = 0; i < $scope.stocks.length; i++) {
+					if ($scope.stocks[i].symbol == stockSymbol) {
+						if (typeof $scope.stocks[i].data === "undefined") {
+							// TODO: Make sure to check for all values returned from API. Should NOT be null.
+							$scope.stocks[i].data = response.data.query.results.quote;
+							$scope.price = response.data.query.results.quote.LastTradePriceOnly;
+							$scope.perChange = response.data.query.results.quote.Change;
+							i = $scope.stocks.length;
+						}
+					}
+				}
+				console.log($scope.stocks);
+
+
 				//$scope.price =  response.data.query.results.quote["LastTradePriceOnly"];
 				//$scope.perChange = response.data.query.results.quote["Change"];
 			  }, function errorCallback(response) {
@@ -82,7 +112,6 @@ angular.module('starter.controllers', [])
 				// or server returns response with an error status.
 				alert('Something went wrong. Please check your internet connection.');
 			  });
-		}
 	}
 
 	$scope.mainFunction = function() {
@@ -179,8 +208,12 @@ angular.module('starter.controllers', [])
 
 
   $scope.$watchCollection('stocks', function(newValue, oldValue) {
-	  if (newValue != oldValue)
-		window.localStorage.setItem('stocks', JSON.stringify($scope.stocks));
+
+
+	  if (newValue != oldValue) {
+			window.localStorage.setItem('stocks', JSON.stringify($scope.stocks));
+		}
+
   });
 
   $scope.addStock = function(stock) {
