@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('ViewCtrl', function($scope, $http) {
+.controller('ViewCtrl', function($scope, $http, $q) {
 
 	// Initialize
 	if (typeof $scope.stocks == "undefined") $scope.stocks = [];
@@ -156,19 +156,11 @@ angular.module('starter.controllers', [])
 			}
 
 			// Now we have an interval of dates, we need to do get the closing price for each of those dates
-			for (var i = 0; i < intervalDates.length; i++) {
-				var url = 'https://query.yahooapis.com/v1/public/yql?q=select%20Adj_Close%20from%20yahoo.finance.historicaldata%20where%20symbol%20%3D%20%22' + stockSymbol +
-				'%22%20and%20startDate%20%3D%20%22' + intervalDates[i] + '%22%20and%20endDate%20%3D%20%22' + intervalDates[i] + '%22&format=json&env=http%3A%2F%2Fdatatables.org%2Falltables.env';
-				$http({
-					method: 'GET',
-					url: url
-				}).then(function successCallback(response) {
 
-				}, function errorCallback(response) {
 
-				});
+			var url = 'https://query.yahooapis.com/v1/public/yql?q=select%20Adj_Close%20from%20yahoo.finance.historicaldata%20where%20symbol%20%3D%20%22' + stockSymbol +
+			'%22%20and%20startDate%20%3D%20%22' + intervalDates[i] + '%22%20and%20endDate%20%3D%20%22' + intervalDates[i] + '%22&format=json&env=http%3A%2F%2Fdatatables.org%2Falltables.env';
 
-			}
 
 		}, function errorCallback(response) {
 			alert('Something went wrong. Please check your internet connection.');
