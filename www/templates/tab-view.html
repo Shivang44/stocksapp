@@ -3,13 +3,16 @@
 	<div ng-class="{hide: stocks.length == 0}" style="text-align:center;">
     <!-- E11111 red and 28a54c green -->
 		<img src="{{graphURL}}" style="width:100%;" />
+    <span>{{ interval }}</span>
 		<h3>{{stockName}}: <span style="font-weight:bold;">${{price | number: 2}}</span></h3>
-    <h3> {{interval}} change: <span style="color: {{perChangeColor}}">{{perChange}}%</span></h3>
+    <h3> 1 day change: <span style="color: {{perChangeColor}}">{{perChange}}%</span></h3>
 	</div>
 	<div ng-class="{hide: stocks.length > 0}">
 		<h4>You do not have any stock added.</h4>
 	</div>
+  <!-- Only for debugging on desktop
 	<p ng-click="debugChange(0)">Stock</p>
 	<p ng-click="debugChange(1)">Interval</p>
+-->
   </ion-content>
 </ion-view>

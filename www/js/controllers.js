@@ -28,7 +28,8 @@ angular.module('starter.controllers', [])
 
 		if ($scope.stocks.length > 0) {
 			$scope.stockName = $scope.stocks[newValue].symbol;
-			$scope.fetchHistoricalData($scope.stockName);
+
+		//	$scope.fetchHistoricalData($scope.stockName); // Maybe do this in a future update
 
 			for (var i = 0; i < $scope.stocks.length; i++) {
 				if ($scope.stocks[i].symbol == $scope.stockName) {
