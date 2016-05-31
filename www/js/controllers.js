@@ -25,8 +25,10 @@ angular.module('starter.controllers', [])
 	}
 
 	$scope.$watch('currentStock', function(newValue, oldValue){
+
 		if ($scope.stocks.length > 0) {
 			$scope.stockName = $scope.stocks[newValue].symbol;
+			$scope.fetchHistoricalData($scope.stockName);
 
 			for (var i = 0; i < $scope.stocks.length; i++) {
 				if ($scope.stocks[i].symbol == $scope.stockName) {
@@ -44,8 +46,6 @@ angular.module('starter.controllers', [])
 			}
 
 		}
-
-
 	});
 
 	$scope.$watch('perChange', function(newValue, oldValue) {
@@ -80,8 +80,6 @@ angular.module('starter.controllers', [])
 			}
 			$scope.newStock();
 			window.plugins.nativepagetransitions.slide({"direction":direction});
-
-
 	}
 
 /*
@@ -95,7 +93,7 @@ angular.module('starter.controllers', [])
 
 	$scope.fetchCurrentData = function(stockSymbol) {
 
-			 var url = 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20in%20(%22' + stockSymbol +
+			 var url = 'https://query.yahooapis.com/v1/public/yql?q=select%20LastTradePriceOnly,Change%20from%20yahoo.finance.quotes%20where%20symbol%20in%20(%22' + stockSymbol +
 			 '%22)&format=json&env=http%3A%2F%2Fdatatables.org%2Falltables.env';
 			$http({
 			  method: 'GET',
@@ -122,6 +120,77 @@ angular.module('starter.controllers', [])
 				// or server returns response with an error status.
 				alert('Something went wrong. Please check your internet connection.');
 			  });
+	}
+
+	$scope.fetchHistoricalData = function(stockSymbol) {
+
+		// Current timestamp
+		var currentTimeStamp = Date.now();
+
+		// We need the following intervals in timestamps: '5d', '1m', '3m', '1y', '2y', '5y', 'my'
+		var intervalTimeStamps = [432000000, 2628000000, 7884000000, 31540000000, 63070000000, 157700000000];
+
+		// To figure out the last timestamp (current time - max time) we need to figure out the first date stock was traded (according to yahoo)
+
+		// Get first date
+		var urlForFirstDate = 'https://query.yahooapis.com/v1/public/yql?q=select%20start%20from%20yahoo.finance.stocks%20where%20symbol%3D%22yhoo%22&format=json&env=http%3A%2F%2Fdatatables.org%2Falltables.env&callback=';
+
+		$http({
+			method: 'GET',
+			url: urlForFirstDate
+		}).then(function successCallback(response) {
+			var firstDateText = response.data.query.results.stock.start;
+			var firstCreatedAtStamp = new Date(firstDateText).getTime();
+			intervalTimeStamps.push(Date.now() - firstCreatedAtStamp - 432000000); // add 5 days just in case
+
+			// intervalTimeStamps[] should have all of the timestamps differences by now.
+			// Time to create dates by doing [Date.now() - timestamp] and converting to date
+			// Should be in format 1996-06-30 for yql
+
+
+			var intervalDates = [];
+			for (var i = 0; i < intervalTimeStamps.length; i++) {
+				var dateObj = new Date(Date.now() - intervalTimeStamps[i]);
+				var dateString = dateObj.getFullYear() + "-" + (dateObj.getMonth()+1) + "-" + dateObj.getDate();
+				intervalDates.push(dateString);
+			}
+
+			// Now we have an interval of dates, we need to do get the closing price for each of those dates
+			for (var i = 0; i < intervalDates.length; i++) {
+				var url = 'https://query.yahooapis.com/v1/public/yql?q=select%20Adj_Close%20from%20yahoo.finance.historicaldata%20where%20symbol%20%3D%20%22' + stockSymbol +
+				'%22%20and%20startDate%20%3D%20%22' + intervalDates[i] + '%22%20and%20endDate%20%3D%20%22' + intervalDates[i] + '%22&format=json&env=http%3A%2F%2Fdatatables.org%2Falltables.env';
+				$http({
+					method: 'GET',
+					url: url
+				}).then(function successCallback(response) {
+
+				}, function errorCallback(response) {
+
+				});
+
+			}
+
+		}, function errorCallback(response) {
+			alert('Something went wrong. Please check your internet connection.');
+		});
+
+
+
+
+/*
+		for (var i = 0; i < $scope.t.length - 1; i++) {
+
+			$http({
+				method: 'GET',
+				url: url
+			}).then(function successCallback(response) {
+				console.log(response);
+			}, function errorCallback(response) {
+				alert('Something went wrong. Please check your internet connection.');
+			});
+
+		}
+*/
 	}
 
 	$scope.mainFunction = function() {
