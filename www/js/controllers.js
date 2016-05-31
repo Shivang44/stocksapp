@@ -133,7 +133,7 @@ angular.module('starter.controllers', [])
 		// To figure out the last timestamp (current time - max time) we need to figure out the first date stock was traded (according to yahoo)
 
 		// Get first date
-		var urlForFirstDate = 'https://query.yahooapis.com/v1/public/yql?q=select%20start%20from%20yahoo.finance.stocks%20where%20symbol%3D%22yhoo%22&format=json&env=http%3A%2F%2Fdatatables.org%2Falltables.env&callback=';
+		var urlForFirstDate = 'https://query.yahooapis.com/v1/public/yql?q=select%20start%20from%20yahoo.finance.stocks%20where%20symbol%3D%22' + stockSymbol + '%22&format=json&env=http%3A%2F%2Fdatatables.org%2Falltables.env&callback=';
 
 		$http({
 			method: 'GET',
@@ -151,15 +151,46 @@ angular.module('starter.controllers', [])
 			var intervalDates = [];
 			for (var i = 0; i < intervalTimeStamps.length; i++) {
 				var dateObj = new Date(Date.now() - intervalTimeStamps[i]);
-				var dateString = dateObj.getFullYear() + "-" + (dateObj.getMonth()+1) + "-" + dateObj.getDate();
+				var year = dateObj.getFullYear();
+				var month = dateObj.getMonth() + 1;
+				var date = dateObj.getDate();
+
+				if (month < 10) {
+					month = "0" + month;
+				}
+
+				if (date < 10) {
+					date = "0" + date;
+				}
+
+				var dateString = year + "-" + month + "-" + date;
 				intervalDates.push(dateString);
 			}
 
 			// Now we have an interval of dates, we need to do get the closing price for each of those dates
+			var url = function(i) {
+				return 'https://query.yahooapis.com/v1/public/yql?q=select%20Adj_Close,Date%20from%20yahoo.finance.historicaldata%20where%20symbol%20%3D%20%22' + stockSymbol +
+ 			'%22%20and%20startDate%20%3D%20%22' + intervalDates[i] + '%22%20and%20endDate%20%3D%20%22' + intervalDates[i] + '%22&format=json&env=http%3A%2F%2Fdatatables.org%2Falltables.env';
+			}
 
 
-			var url = 'https://query.yahooapis.com/v1/public/yql?q=select%20Adj_Close%20from%20yahoo.finance.historicaldata%20where%20symbol%20%3D%20%22' + stockSymbol +
-			'%22%20and%20startDate%20%3D%20%22' + intervalDates[i] + '%22%20and%20endDate%20%3D%20%22' + intervalDates[i] + '%22&format=json&env=http%3A%2F%2Fdatatables.org%2Falltables.env';
+			console.log(intervalDates);
+
+
+			$q.all([
+				$http.get(url(0)),
+				$http.get(url(1)),
+				$http.get(url(2)),
+				$http.get(url(3)),
+				$http.get(url(4)),
+				$http.get(url(5)),
+				$http.get(url(6))
+			]).then(function(results) {
+				console.log(results);
+				for (var j = 0; j < results.length; j++) {
+					console.log(results[j].data.query.results.quote["Date"] + " : " + results[j].data.query.results.quote["Adj_Close"]);
+				}
+			});
 
 
 		}, function errorCallback(response) {
