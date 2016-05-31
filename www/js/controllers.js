@@ -25,7 +25,6 @@ angular.module('starter.controllers', [])
 	}
 
 	$scope.$watch('currentStock', function(newValue, oldValue){
-
 		if ($scope.stocks.length > 0) {
 			$scope.stockName = $scope.stocks[newValue].symbol;
 
@@ -82,15 +81,6 @@ angular.module('starter.controllers', [])
 			$scope.newStock();
 			window.plugins.nativepagetransitions.slide({"direction":direction});
 	}
-
-/*
-	$scope.$watch('newStockData', function(newValue, oldValue){
-		console.log(newValue);
-		if (newValue.length > 0) {
-			$scope.price = newValue[$scope.currentStock]["LastTradePriceOnly"];
-			$scope.perChange = newValue[$scope.currentStock]["Change"];
-		}
-	}, true);*/
 
 	$scope.fetchCurrentData = function(stockSymbol) {
 
@@ -199,22 +189,6 @@ angular.module('starter.controllers', [])
 		});
 
 
-
-
-/*
-		for (var i = 0; i < $scope.t.length - 1; i++) {
-
-			$http({
-				method: 'GET',
-				url: url
-			}).then(function successCallback(response) {
-				console.log(response);
-			}, function errorCallback(response) {
-				alert('Something went wrong. Please check your internet connection.');
-			});
-
-		}
-*/
 	}
 
 	$scope.mainFunction = function() {
@@ -222,13 +196,18 @@ angular.module('starter.controllers', [])
 		$scope.t = ['1d', '5d', '1m', '3m', '1y', '2y', '5y', 'my'];
 		$scope.t_EN = ['1 day', '5 day', '1 month', '3 month', '1 year', '2 year', '5 year', 'max'];
 
+		$scope.fillStockArray();
+
 		// Start with first stock in array
 		$scope.currentStock = 0;
 
 		// Start out with 1d
 		$scope.currentInterval = 0;
 
-		$scope.fillStockArray();
+		// Get initial data
+		$scope.stockName = $scope.stocks[0].symbol;
+		$scope.fetchCurrentData($scope.stockName);
+
 
 	}
 
@@ -239,9 +218,9 @@ angular.module('starter.controllers', [])
 			if ($scope.stocks.length > 0) {
 				// Generate graph URL
 				$scope.graphURL = 'https://chart.finance.yahoo.com/z?' + '&z=s' + '&t='
-				+ $scope.t[$scope.currentInterval] + '&s=' + $scope.stocks[$scope.currentStock].symbol;
+				+ $scope.t[0] + '&s=' + $scope.stocks[0].symbol;
 
-
+				$scope.stockName = $scope.stocks[0].symbol;
 			}
 
 
