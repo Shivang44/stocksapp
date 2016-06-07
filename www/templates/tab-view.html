@@ -3,9 +3,8 @@
 	<div ng-class="{hide: stocks.length == 0}" style="text-align:center;">
     <!-- E11111 red and 28a54c green -->
 		<img src="{{graphURL}}" style="width:100%;" />
-    <span>{{ interval }}</span>
-		<h3>{{stockName}}: <span style="font-weight:bold;">${{price | number: 2}}</span></h3>
-    <h3> 1 day change: <span style="color: {{perChangeColor}}">{{perChange}}%</span></h3>
+    <h4 style="margin-top:-5px;">{{ interval }}</h4>
+		<h3>{{stockName}}: <span style="font-weight:bold;">${{price | number: 2}} </span><span style="color: {{perChangeColor}}">({{perChange}})</span></h3>
 	</div>
 	<div ng-class="{hide: stocks.length > 0}">
 		<h4>You do not have any stocks added.</h4>
@@ -14,5 +13,12 @@
 	<p ng-click="debugChange(0)">Stock</p>
 	<p ng-click="debugChange(1)">Interval</p>
 -->
+<br />
+<div class="arrowcontrols">
+    <i class="ion-arrow-up-c" style="display: block; margin-bottom: -15px;" on-tap="onSwipe('up')"></i>
+    <i class="ion-arrow-left-c" style="padding-right: 40px;" on-tap="onSwipe('right')"></i>
+    <i class="ion-arrow-right-c" on-tap="onSwipe('left')"></i>
+    <i class="ion-arrow-down-c" style="display: block; margin-top: -15px;" on-tap="onSwipe('down')"></i>
+</div>
   </ion-content>
 </ion-view>

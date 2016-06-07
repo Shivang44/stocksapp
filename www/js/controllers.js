@@ -39,7 +39,7 @@ angular.module('starter.controllers', [])
 					} else {
 						// Data already filled, set values
 						$scope.price = $scope.stocks[i].data.LastTradePriceOnly;
-						$scope.perChange = $scope.stocks[i].data.Change;
+						$scope.perChange = $scope.stocks[i].data.PercentChange;
 					}
 					i = $scope.stocks.length;
 				}
@@ -84,12 +84,13 @@ angular.module('starter.controllers', [])
 
 	$scope.fetchCurrentData = function(stockSymbol) {
 
-			 var url = 'https://query.yahooapis.com/v1/public/yql?q=select%20LastTradePriceOnly,Change%20from%20yahoo.finance.quotes%20where%20symbol%20in%20(%22' + stockSymbol +
+			 var url = 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20in%20(%22' + stockSymbol +
 			 '%22)&format=json&env=http%3A%2F%2Fdatatables.org%2Falltables.env';
 			$http({
 			  method: 'GET',
 			  url: url
 			}).then(function successCallback(response) {
+				console.log(response);
 				var stockSymbolIndex = 0;
 				for (var i = 0; i < $scope.stocks.length; i++) {
 					if ($scope.stocks[i].symbol == stockSymbol) {
@@ -97,7 +98,7 @@ angular.module('starter.controllers', [])
 							// TODO: Make sure to check for all values returned from API. Should NOT be null.
 							$scope.stocks[i].data = response.data.query.results.quote;
 							$scope.price = response.data.query.results.quote.LastTradePriceOnly;
-							$scope.perChange = response.data.query.results.quote.Change;
+							$scope.perChange = response.data.query.results.quote.PercentChange;
 							i = $scope.stocks.length;
 						}
 					}

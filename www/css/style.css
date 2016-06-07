@@ -2,3 +2,12 @@
 .hide {
 	display: none;
 }
+.arrowcontrols {
+	bottom: 0px;
+	text-align: center;
+}
+.arrowcontrols i {
+	font-size: 4em;
+	text-align: center;
+	color: #387EF5;
+}
