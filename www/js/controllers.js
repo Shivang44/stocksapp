@@ -194,8 +194,8 @@ angular.module('starter.controllers', [])
 
 	$scope.mainFunction = function() {
 		// Timeframe to view stocks
-		$scope.t = ['1d', '5d', '1m', '3m', '1y', '2y', '5y', 'my'];
-		$scope.t_EN = ['1 day', '5 day', '1 month', '3 month', '1 year', '2 year', '5 year', 'max'];
+		$scope.t = ['1d', '5d', '1m', '3m', '6m', '1y', '2y', '5y', 'my'];
+		$scope.t_EN = ['1 day', '5 day', '1 month', '3 month', '6 month', '1 year', '2 year', '5 year', 'max'];
 
 		$scope.fillStockArray();
 
