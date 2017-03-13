@@ -85,7 +85,7 @@ angular.module('starter.controllers', [])
 	$scope.fetchCurrentData = function(stockSymbol) {
 
 			 var url = 'https://query.yahooapis.com/v1/public/yql?q=select%20LastTradePriceOnly,PercentChange%20from%20yahoo.finance.quotes%20where%20symbol%20in%20(%22' + stockSymbol +
-			 '%22)&format=json&env=http%3A%2F%2Fdatatables.org%2Falltables.env';
+			 '%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=';
 			$http({
 			  method: 'GET',
 			  url: url
@@ -125,7 +125,7 @@ angular.module('starter.controllers', [])
 		// To figure out the last timestamp (current time - max time) we need to figure out the first date stock was traded (according to yahoo)
 
 		// Get first date
-		var urlForFirstDate = 'https://query.yahooapis.com/v1/public/yql?q=select%20start%20from%20yahoo.finance.stocks%20where%20symbol%3D%22' + stockSymbol + '%22&format=json&env=http%3A%2F%2Fdatatables.org%2Falltables.env&callback=';
+		var urlForFirstDate = 'https://query.yahooapis.com/v1/public/yql?q=select%20start%20from%20yahoo.finance.stocks%20where%20symbol%3D%22' + stockSymbol + '%22&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=';
 
 		$http({
 			method: 'GET',
@@ -162,7 +162,7 @@ angular.module('starter.controllers', [])
 			// Now we have an interval of dates, we need to do get the closing price for each of those dates
 			var url = function(i) {
 				return 'https://query.yahooapis.com/v1/public/yql?q=select%20Adj_Close,Date%20from%20yahoo.finance.historicaldata%20where%20symbol%20%3D%20%22' + stockSymbol +
- 			'%22%20and%20startDate%20%3D%20%22' + intervalDates[i] + '%22%20and%20endDate%20%3D%20%22' + intervalDates[i] + '%22&format=json&env=http%3A%2F%2Fdatatables.org%2Falltables.env';
+ 			'%22%20and%20startDate%20%3D%20%22' + intervalDates[i] + '%22%20and%20endDate%20%3D%20%22' + intervalDates[i] + '%22&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=';
 			}
 
 
