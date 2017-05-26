@@ -79,7 +79,7 @@ angular.module('starter.controllers', [])
 
 			}
 			$scope.newStock();
-			window.plugins.nativepagetransitions.slide({"direction":direction});
+			//window.plugins.nativepagetransitions.slide({"direction":direction});
 	}
 
 	$scope.fetchCurrentData = function(stockSymbol) {
@@ -194,8 +194,10 @@ angular.module('starter.controllers', [])
 
 	$scope.mainFunction = function() {
 		// Timeframe to view stocks
-		$scope.t = ['1d', '5d', '1m', '3m', '6m', '1y', '2y', '5y', 'my'];
+		//$scope.t = ['1d', '5d', '1m', '3m', '6m', '1y', '2y', '5y', 'my'];
+		$scope.t = ['1d', '5d', '1M', '3M', '6M', '1Y', '2Y', '5Y', '1000Y'];
 		$scope.t_EN = ['1 day', '5 day', '1 month', '3 month', '6 month', '1 year', '2 year', '5 year', 'max'];
+		$scope.tickInterval = ['300', '1000', '100000', '100000', '100000', '100000', '100000', '100000', '100000'];
 
 		$scope.fillStockArray();
 
@@ -218,8 +220,9 @@ angular.module('starter.controllers', [])
 			$scope.stocks = JSON.parse(window.localStorage.getItem("stocks"));
 			if ($scope.stocks.length > 0) {
 				// Generate graph URL
-				$scope.graphURL = 'https://chart.finance.yahoo.com/z?' + '&z=s' + '&t='
-				+ $scope.t[0] + '&s=' + $scope.stocks[0].symbol;
+				//$scope.graphURL = 'https://chart.finance.yahoo.com/z?' + '&z=s' + '&t='
+				//+ $scope.t[0] + '&s=' + $scope.stocks[0].symbol;
+				$scope.graphURL = 'https://www.google.com/finance/getchart?q=' + $scope.stocks[0].symbol + '&p=' + $scope.t[0] + '&i=' + $scope.tickInterval[0];
 
 				$scope.stockName = $scope.stocks[0].symbol;
 			}
@@ -232,7 +235,6 @@ angular.module('starter.controllers', [])
 
 	$scope.newStock = function () {
 		if ($scope.stocks.length > 0) {
-
 			// If going past max time, just loop back around
 			if ($scope.currentInterval == $scope.t.length) $scope.currentInterval = 0;
 
@@ -246,8 +248,10 @@ angular.module('starter.controllers', [])
 			if ($scope.currentStock == -1) $scope.currentStock = $scope.stocks.length - 1;
 
 
-				$scope.graphURL = 'https://chart.finance.yahoo.com/z?' + '&z=s' + '&t='
-				+ $scope.t[$scope.currentInterval] + '&s=' + $scope.stocks[$scope.currentStock].symbol;
+				//$scope.graphURL = 'https://chart.finance.yahoo.com/z?' + '&z=s' + '&t='
+				//+ $scope.t[$scope.currentInterval] + '&s=' + $scope.stocks[$scope.currentStock].symbol;
+				$scope.graphURL = 'https://www.google.com/finance/getchart?q=' + $scope.stocks[$scope.currentStock].symbol + '&p=' + $scope.t[$scope.currentInterval] + '&i=' + $scope.tickInterval[$scope.currentInterval];
+
 		}
 	}
 
@@ -297,6 +301,7 @@ angular.module('starter.controllers', [])
 			window.localStorage.setItem('stocks', JSON.stringify($scope.stocks));
 		}
 
+		console.log($scope.stocks);
   });
 
   $scope.addStock = function(stock) {
@@ -369,8 +374,10 @@ angular.module('starter.controllers', [])
   $scope.$watch('selected', function(newVal, oldVal){
 	  if ($scope.selected.length > 0) {
 		  $scope.addDelete = "Delete";
+		  $scope.buttonColor = "button-assertive"
 	  } else {
 		  $scope.addDelete = "Add";
+		  $scope.buttonColor = "button-positive";
 	  }
   }, true);
 

@@ -2,7 +2,9 @@
   <ion-content class="padding" on-swipe-left="onSwipe('left')" on-swipe-right="onSwipe('right')" on-swipe-up="onSwipe('up')" on-swipe-down="onSwipe('down')">
 	<div ng-class="{hide: stocks.length == 0}" style="text-align:center;">
     <!-- E11111 red and 28a54c green -->
-		<img src="{{graphURL}}" style="width:100%;" />
+        <div>
+		<img src="{{graphURL}}" style="width:85%;" />
+    </div>
     <h4 style="margin-top:-5px;">{{ interval }}</h4>
 		<h3>{{stockName}}: <span style="font-weight:bold;">${{price | number: 2}} </span><span style="color: {{perChangeColor}}">({{perChange}})</span></h3>
 	</div>

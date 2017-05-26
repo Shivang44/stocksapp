@@ -5,11 +5,11 @@
 	  <span class="input-label">Enter stock symbol here: </span>
 	  <input type="text" ng-model="stock.symbol">
 	</label>
-	<button type="submit" class="button button-block button-positive">{{ addDelete }}</button>
+	<button type="submit" class="button button-block" ng-class="buttonColor">{{ addDelete }}</button>
 	</form>
 	<br/>
 	<ion-list>
-		<ion-item ng-repeat="stock in stocks track by $index" ng-click="clicked(stock)" ng-class="{ active: (selected.indexOf(stock.symbol) > -1 ) }">
+		<ion-item ng-repeat="stock in stocks | orderObjectBy:'symbol' track by $index" ng-click="clicked(stock)" ng-class="{ active: (selected.indexOf(stock.symbol) > -1 ) }">
 			{{stock.symbol}}
 		</ion-item>
 	</ion-list>
